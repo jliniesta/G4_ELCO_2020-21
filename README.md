@@ -22,6 +22,6 @@ ETSIT - UPM
 - Luis de Pablo Beltrán
 
 
-##### Licenncia
+### Licencia
 Copyright 2021 Padel Watch. \
 All rights reserved. 
