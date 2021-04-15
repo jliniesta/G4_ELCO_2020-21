@@ -1,0 +1,15 @@
+Sobre el la programacion del reloj
+Ivan plantea los problemas y lo que nos falta 
+
+Sobre la pantalla
+Tenemos problemas en la instalación de la pantalla, es el trabajo mas urgente por si necesitamos cambiarla.
+
+Sobre las impresiones 3D
+Estamos esperando a saber como va el botón para imprimir la caja del reloj
+Estamos esperando a ver si nos vale la pantalla antes de imprimir su caja
+
+Video:
+Hacer guión que incluya
+Presentarnos a nosotros
+Presenetamos el proyecto y todo lo que hemos hecho
+Enseñamos demo del prototipo

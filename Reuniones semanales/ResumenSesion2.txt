@@ -1,0 +1,15 @@
+Resumen de la reunión 2:
+
+-Ya se ha comprado la pantalla de tinta electronica y el reloj programable
+-Se pueden comunicar como maestros y esclavos (pantalla -> maestro, botones/reloj->esclavos), hay que buscar en internet.
+-El reloj ha costado 22,55 + IVA.
+-Hay que buscar una pantalla más grande y que sea barata para la versión final.
+-Planteamos la opción de vender además, 4 relojes sin pantalla.
+-Vamos a usar un ESP32 con IDLE arduino.
+-Tareas a repartir:
+			Software:	 -Luis
+					 -Ivan
+					 -Fer
+
+			Prototipo/final: -Javier
+					 -Iñigo

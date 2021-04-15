@@ -1,0 +1,37 @@
+	REUNIÓN ELCO 18/03/2021
+
+-Reloj LILYGO® TTGO T-Watch-2020 tiene un botón, que es botón y rueda.
+-Hacer reset, interfaz de entrada, hacer menú para cuando arranca el S.O, etc. 
+-Batería para el ESP32 (nos la deja Xabi).
+-Ambos relojes tienen la batería de de conector pequeño.
+-Mirar si se puede WiFi para conectar los relojes.
+
+-9 de Abril de 2021 (semana de despues de Semana Santa):
+    -Terminar la demo
+    -Buscar botones
+    -Buscar botones con rueda 
+    -Hacer 2 cajitas
+
+-FREECAD (para hacer las cajitas):
+	· Se hacen 2 cubos
+	· Se restan
+	· Tapa, por el lado de la muñeca y por el otro lado agujero para la pantalla.
+	· Se exportan con formato ".stl"
+
+-Para hacer la versión final, posiblmente necesitemos una Raspberry Pi para conectar la pantalla.
+-Presentación + Video -> Este año solo es video. 
+	1) Presentar el producto
+	2) ¿Que ha hecho cada uno?
+	3) El coste
+	4) Programación
+	5) Demo (al final para mantener la atención de la gente)
+
+-Costes: 
+	·Personal: Coste de cargar el programa en los relojes, en la pantalla, etc
+	·Material: 2 relojes, pantalla, etc 
+	·Embalaje: Tiempo de embalaje, y preparar el reloj en una cajita para su venta
+	·Envío: Cuanto nos cuesta enviar un paquete de 5kg.
+	·Margen de beneficio: Entre un 30% y 50%.
+
+-Servicio postventa: Tendremos que dar garantía, y si se estropea abrirlo verlo y decir si ha sido culpa
+		     del cliente o culpa nuestra.

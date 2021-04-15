@@ -1,0 +1,21 @@
+Resumen de la Reunion 1:
+
+-Decidido el proyecto que vamos a hacer
+-Hablado del tipo de componentes y de donde los vamos a sacar
+-Hablado el tipo de pantalla vamos a usar para el marcador.
+-Hemos pensado las distintas opciones que tenemos para enviar la señal
+
+
+Debemos organizar las distintas tareas entre los componentes del grupo:
+Diseño Mecánico 
+Diseño de la PCB
+Piezas 3D(cajita con boton)
+Panel de plastico
+Prototipo electrónico de algo
+Listado de material para prototipo como diseño final
+Software
+Resumenes
+Hacer web o vender ajenamente
+Definir el producto final
+Etc...
+
