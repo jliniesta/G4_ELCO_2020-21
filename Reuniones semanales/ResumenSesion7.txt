@@ -1,1 +1,32 @@
 REUNIÓN ELCO 16/04/2021
+
+Carcasas
+   - Xabi comenta que ha imprimido la carcasa de la pantalla, y no cabe.
+   - Debemos realizarlo de forma sólida y 2 mm más ancha.
+   - Nos comenta que es mejor quitar los soportes.
+   - Realizar agujero para la carcasa del reloj.
+
+Video
+   - El guión está bien, pero hace falta hacerlo más detallado.
+   - Intentar intercalar imagen y audio para hacerlo más dinámico.
+   - Nos comenta que se puede grabar en el hall del A o en acelerador de particulas (pasillo entre edificio A y B).
+   - Utilizar micrófono inalámbrico.
+
+Memoria
+   - Cambiar "Idea de servicio" por "Idea de producto".
+   - Definir la idea de producto final.
+   - Terminarla para la próxima semana.
+
+Github 
+   - Le parece buena idea de que lo subamos ahí.
+
+Pulsador
+   - Se comenta que algunas pulsaciones no la detecta bien.
+   - Se comenta la posibilidad de incorporar algún condensador.
+   - El profesor Morten, comenta que se puede realizarlo con varios estados de forma Software
+   - Xabi se encarga de para la proxima semana mirarlo.
+
+
+
+
+
