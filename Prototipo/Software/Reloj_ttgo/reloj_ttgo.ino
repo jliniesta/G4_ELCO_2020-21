@@ -10,7 +10,7 @@
   ###### DON'T FORGET TO UPDATE THE User_Setup.h FILE IN THE LIBRARY ######
   #########################################################################
 */
-
+#include "Free_Fonts.h"
 #include "config.h"
 //#ifdef LILYGO_WATCH_HAS_BUTTON
 //
@@ -45,6 +45,7 @@ String puntB_pantalla ; // 0 15 30 40
 int set = 1; // set 1, 2, 3
 boolean tie = false;
 uint8_t broadcastAddress[] = {0xA4, 0xCF, 0x12, 0x02, 0xBF, 0x9C};
+uint8_t broadcastAddress2[] = {0x7C, 0x9E, 0xBD, 0xFB, 0x1D, 0xDC};
 
 typedef struct struct_message {
   int puntEnvA;
@@ -55,7 +56,13 @@ typedef struct struct_message {
 struct_message myData;
 
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  Serial.print("\r\nLast Packet Send Status:\t");
+  char macStr[12];
+  Serial.print("Packet to: ");
+  // Copies the sender mac address to a string
+  snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
+           mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
+  Serial.print(macStr);
+  Serial.print(" send status:\t");
   Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
 }
 
@@ -95,10 +102,29 @@ void addjuegoB() {
 //sumar punto A
 void addPuntA() {
   ttgo->tft->fillScreen(TFT_WHITE);
-  
-    puntA ++;
-    myData.puntEnvA = 0;
-  
+  lv_obj_t *label;
+
+
+  //  lv_obj_t *btn1 = lv_btn_create(lv_scr_act(), NULL);
+  //  lv_obj_set_event_cb(btn1, addPuntA);
+  //  lv_obj_set_size(btn1, 100, 100);
+  //  lv_obj_align(btn1, NULL, LV_ALIGN_IN_LEFT_MID, 0, 40);
+  //
+  //  label = lv_label_create(btn1, NULL);
+  //  lv_label_set_text(label, "suma A");
+
+  lv_obj_t *btn2 = lv_btn_create(lv_scr_act(), NULL);
+  lv_obj_set_event_cb(btn2, addPuntB);
+  lv_obj_set_size(btn2, 150, 50);
+  lv_obj_align(btn2, NULL, LV_ALIGN_CENTER, 0, 80);
+
+  label = lv_label_create(btn2, NULL);
+  lv_label_set_text(label, "Suma");
+
+  puntA ++;
+  myData.puntEnvA = 0;
+
+
   if (tie == false ) {
     if ((puntA > 3) && (puntA - puntB >= 2)) {
       addjuegoA();
@@ -154,7 +180,8 @@ void addPuntB(lv_obj_t *obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     puntB ++;
     myData.puntEnvB = 1;
-    esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+    esp_err_t result = esp_now_send(0, (uint8_t *) &myData, sizeof(myData));
+
   }
   if (tie == false ) {
     if (( puntB > 3) && (puntB - puntA >= 2)) {
@@ -248,22 +275,31 @@ void printResultado() {
 
   }
 
-  ttgo->tft->drawString(String(set1A), 0, 0);
+  ttgo->tft->setTextColor(TFT_BLACK);
+  ttgo->tft->setFreeFont(FF20);
 
-  ttgo->tft->drawString( String(set2A), 40, 0);
+  ttgo->tft->drawString("Equipo B", 0, 0);
+  
+  ttgo->tft->drawString("A:", 0, 60);
 
-  ttgo->tft->drawString(String(set3A), 80, 0);
+  ttgo->tft->drawString("B:", 0, 120);
+  
+  ttgo->tft->drawString(String(set1A), 60, 60);
 
-  ttgo->tft->drawString(puntA_pantalla, 160, 0);
+  ttgo->tft->drawString( String(set2A), 90, 60);
 
-  ttgo->tft->drawString(String(set1B), 0, 60);
+  ttgo->tft->drawString(String(set3A), 120, 60);
 
-  ttgo->tft->drawString(String(set2B), 40, 60);
+  ttgo->tft->drawString(puntA_pantalla, 180, 60);
 
-  ttgo->tft->drawString( String(set3B), 80, 60);
+  ttgo->tft->drawString(String(set1B), 60, 120);
+
+  ttgo->tft->drawString(String(set2B), 90, 120);
+
+  ttgo->tft->drawString( String(set3B), 120, 120);
 
 
-  ttgo->tft->drawString(puntB_pantalla, 160, 60);
+  ttgo->tft->drawString(puntB_pantalla, 180, 120);
 
   lv_task_handler();
 }
@@ -282,21 +318,23 @@ void setup(void)
   lv_obj_t *label;
 
 
-//  lv_obj_t *btn1 = lv_btn_create(lv_scr_act(), NULL);
-//  lv_obj_set_event_cb(btn1, addPuntA);
-//  lv_obj_set_size(btn1, 100, 100);
-//  lv_obj_align(btn1, NULL, LV_ALIGN_IN_LEFT_MID, 0, 40);
-//
-//  label = lv_label_create(btn1, NULL);
-//  lv_label_set_text(label, "suma A");
+  //  lv_obj_t *btn1 = lv_btn_create(lv_scr_act(), NULL);
+  //  lv_obj_set_event_cb(btn1, addPuntA);
+  //  lv_obj_set_size(btn1, 100, 100);
+  //  lv_obj_align(btn1, NULL, LV_ALIGN_IN_LEFT_MID, 0, 40);
+  //
+  //  label = lv_label_create(btn1, NULL);
+  //  lv_label_set_text(label, "suma A");
 
   lv_obj_t *btn2 = lv_btn_create(lv_scr_act(), NULL);
   lv_obj_set_event_cb(btn2, addPuntB);
-  lv_obj_set_size(btn2, 100, 100);
-  lv_obj_align(btn2, NULL, LV_ALIGN_CENTER, 0, 40);
+  lv_obj_set_size(btn2, 150, 50);
+  lv_obj_align(btn2, NULL, LV_ALIGN_CENTER, 0, 80);
 
   label = lv_label_create(btn2, NULL);
-  lv_label_set_text(label, "suma B");
+  lv_label_set_text(label, "Suma");
+
+  
   if (esp_now_init() != ESP_OK) {
     Serial.println("Error initializing ESP-NOW");
     return;
@@ -304,32 +342,40 @@ void setup(void)
   esp_now_register_recv_cb(OnDataRecv);
   esp_now_register_send_cb(OnDataSent);
   esp_now_peer_info_t peerInfo;
-  memcpy(peerInfo.peer_addr, broadcastAddress, 6);
-  peerInfo.channel = 0;  
+
+  peerInfo.channel = 0;
   peerInfo.encrypt = false;
-  
-  // Add peer        
-  if (esp_now_add_peer(&peerInfo) != ESP_OK){
+
+  // Add peer
+  memcpy(peerInfo.peer_addr, broadcastAddress, 6);
+  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+    Serial.println("Failed to add peer");
+    return;
+  }
+  memcpy(peerInfo.peer_addr, broadcastAddress2, 6);
+  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
     Serial.println("Failed to add peer");
     return;
   }
 
- 
+
 }
 
 void loop()
 {
-  if (myData.puntEnvA == 1){
+
+
+  if (myData.puntEnvA == 1) {
     addPuntA();
-    }
-  
-
-  // First we test them with a background colour set
-  ttgo->tft->setTextSize(5);
-
-  ttgo->tft->setTextColor(TFT_GREEN);
+  }
   printResultado();
-
-
   delay(5);
+  // First we test them with a background colour set
+
+
+
+
+
+
+
 }

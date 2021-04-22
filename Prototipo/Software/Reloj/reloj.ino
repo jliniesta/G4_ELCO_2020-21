@@ -21,6 +21,7 @@ int set = 1; // set 1, 2, 3
 boolean tie = false;
 
 uint8_t broadcastAddress[] = {0x3C, 0x61, 0x05, 0x0D, 0x93, 0x5C};
+uint8_t broadcastAddress2[] = {0x7C, 0x9E, 0xBD, 0xFB, 0x1D, 0xDC};
 
 typedef struct struct_message {
   int puntEnvA;
@@ -32,7 +33,13 @@ struct_message myData;
 
 // callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  Serial.print("\r\nLast Packet Send Status:\t");
+   char macStr[12];
+  Serial.print("Packet to: ");
+  // Copies the sender mac address to a string
+  snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
+           mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
+  Serial.print(macStr);
+  Serial.print(" send status:\t");
   Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
 }
 
@@ -77,7 +84,7 @@ void addPuntA(GFButton & button) {
 
   puntA ++;
   myData.puntEnvA = 1;
-  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+  esp_err_t result = esp_now_send(0, (uint8_t *) &myData, sizeof(myData));
 
 
   if (tie == false ) {
@@ -233,22 +240,28 @@ void printResultado() {
 
 
   Heltec.display->setFont(ArialMT_Plain_16);
+  
+  Heltec.display->drawString(0, 0, "EQUIPO A");
 
-  Heltec.display->drawString(0, 0, String(set1A));
+  Heltec.display->drawString(0, 20, "A:");
 
-  Heltec.display->drawString(20, 0, String(set2A));
+  Heltec.display->drawString(0, 40, "B:");
 
-  Heltec.display->drawString(40, 0, String(set3A));
+  Heltec.display->drawString(20, 20, String(set1A));
 
-  Heltec.display->drawString(0, 20, String(set1B));
+  Heltec.display->drawString(40, 20, String(set2A));
 
-  Heltec.display->drawString(20, 20, String(set2B));
+  Heltec.display->drawString(60, 20, String(set3A));
 
-  Heltec.display->drawString(40, 20, String(set3B));
+  Heltec.display->drawString(20, 40, String(set1B));
 
-  Heltec.display->drawString(100, 0, puntA_pantalla);
+  Heltec.display->drawString(40, 40, String(set2B));
 
-  Heltec.display->drawString(100, 20, puntB_pantalla);
+  Heltec.display->drawString(60, 40, String(set3B));
+
+  Heltec.display->drawString(100, 20, puntA_pantalla);
+
+  Heltec.display->drawString(100, 40, puntB_pantalla);
 }
 
 
@@ -269,11 +282,17 @@ void setup() {
   esp_now_register_recv_cb(OnDataRecv);
   esp_now_register_send_cb(OnDataSent);
   esp_now_peer_info_t peerInfo;
-  memcpy(peerInfo.peer_addr, broadcastAddress, 6);
+ 
   peerInfo.channel = 0;  
   peerInfo.encrypt = false;
   
-  // Add peer        
+  // Add peer 
+  memcpy(peerInfo.peer_addr, broadcastAddress, 6);       
+  if (esp_now_add_peer(&peerInfo) != ESP_OK){
+    Serial.println("Failed to add peer");
+    return;
+  }
+  memcpy(peerInfo.peer_addr, broadcastAddress2, 6);
   if (esp_now_add_peer(&peerInfo) != ESP_OK){
     Serial.println("Failed to add peer");
     return;
