@@ -1,14 +1,16 @@
-/*
-    LilyGo Ink Screen Series Test
-        - Created by Lewis he
-*/
+/**
+*	Pantalla marcador de padel, versión del LILYGO TTGO T5 V2.3 ESP32
+*	
+*	Autores:
+*		Fernando Garcia Gutierrez
+*		Javier Lopez Iniesta
+*		Ivan Martin Canton
+*		Iñigo Montesino Sarmiento
+*		Luis de Pablo Beltran
+**/
 
-// According to the board, cancel the corresponding macro definition
+// Se define la version de nuestra pantalla
 #define LILYGO_T5_V213
-//#define LILYGO_T5_V22
-// #define LILYGO_T5_V24
-// #define LILYGO_T5_V28
-
 
 #include <boards.h>
 #include <GxEPD.h>
@@ -16,40 +18,11 @@
 #include <FS.h>
 #include <esp_now.h>
 
-// #include <GxGDEH0154D67/GxGDEH0154D67.h>  // 1.54" b/w
-// #include <GxDEPG0150BN/GxDEPG0150BN.h>    // 1.54" b/w  form DKE GROUP
-
-//#include <GxGDEW027W3/GxGDEW027W3.h>      // 2.7" b/w
-// #include <GxDEPG0266BN/GxDEPG0266BN.h>    // 2.66" b/w  form DKE GROUP
-// #include <GxDEPG0290B/GxDEPG0290B.h>      // 2.9" b/w   form DKE GROUP
-
-// old panel
-//#include <GxGDEH0213B72/GxGDEH0213B72.h>  // 2.13" b/w old panel
+// Se incluyen las libreria de nuestro modelo
 #include <GxGDEH0213B73/GxGDEH0213B73.h>  // 2.13" b/w old panel
-
-//! The current LilyGo uses the ink screen version DEPG0213BN
-//#include <GxDEPG0213BN/GxDEPG0213BN.h>    // 2.13" b/w  form DKE GROUP
-
-// #include <GxGDEM0213B74/GxGDEM0213B74.h>  // 2.13" b/w  form GoodDisplay 4-color
-
-// #include <GxGDEH029A1/GxGDEH029A1.h>      // 2.9" b/w   form DKE GROUP
-
-// #include <GxQYEG0290BN/GxQYEG0290BN.h>    // 2.9" b/w
-
-// The following screens are not supported
-// #include <GxGDEW0213Z16/GxGDEW0213Z16.h>  // 2.13" b/w/r
-// #include <GxGDEW0154Z04/GxGDEW0154Z04.h>  // 1.54" b/w/r 200x200
-// #include <GxGDEW0154Z17/GxGDEW0154Z17.h>  // 1.54" b/w/r 152x152
-// #include <GxGDEW027C44/GxGDEW027C44.h>    // 2.7" b/w/r
-// #include <GxGDEW029Z10/GxGDEW029Z10.h>    // 2.9" b/w/r
-// #include <GxDEPG0290R/GxDEPG0290R.h>      // 2.9" b/w/r  form DKE GROUP
-
-// #include <GxDEPG0750BN/GxDEPG0750BN.h>    // 7.5" b/w    form DKE GROUP
-
-
 #include GxEPD_BitmapExamples
 
-// FreeFonts from Adafruit_GFX
+// FreeFonts de Adafruit_GFX
 #include <Fonts/FreeMonoBold9pt7b.h>
 #include <Fonts/FreeMonoBold12pt7b.h>
 #include <Fonts/FreeMonoBold18pt7b.h>
@@ -61,8 +34,7 @@
 GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
 GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
-
-
+// Se definen las variables para almacenar la puntuación de los equipos.
 int set1A = 0;
 int set2A = 0;
 int set3A = 0;
@@ -71,28 +43,37 @@ int set2B = 0;
 int set3B = 0;
 int puntA = 0;
 int puntB = 0;
+
+// Se crean las variables para representar la puntuación en pantalla del marcador.
 String puntA_pantalla ; // 0 15 30 40
 String puntB_pantalla ; // 0 15 30 40
+
+// Se crean las variables que controlan el funcionamiento del marcador.
 int set = 1; // set 1, 2, 3
 boolean tie = false;
+boolean winA = false;
+boolean winB = false;
 
+/* Se crea una estructura que almacena cuando se pulsan los mensajes para poder realizar 
+la comunicacion con el resto de dispositivos
+*/
 typedef struct struct_message {
   int puntEnvA;
   int puntEnvB;
 } struct_message;
 
-// Create a struct_message called myData
 struct_message myData;
 
+// Funcion que almacena los valores recibidos en una constante de tipo struct_message
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&myData, incomingData, sizeof(myData));
-
   Serial.println(myData.puntEnvA);
   Serial.println(myData.puntEnvB);
-
 }
 
-
+/* Funcion que cuando es llamada, aumenta un juego al equipo A en funcion del set en el que 
+se encuentren.
+*/
 void addjuegoA() {
   if (set == 1) {
     set1A ++;
@@ -105,6 +86,9 @@ void addjuegoA() {
   }
 }
 
+/* Funcion que cuando es llamada, aumenta un juego al equipo B en funcion del set en el que se 
+encuentren.
+*/
 void addjuegoB() {
   if (set == 1) {
     set1B ++;
@@ -117,21 +101,26 @@ void addjuegoB() {
   }
 }
 
-
+// Funcion que cuando es llamada, suma un punto al equipo A.
 void addPuntA() {
 
-
+  // Se suma un punto al equipo A.
   puntA ++;
+  
+  /* Se reinicia el valor de la variable que indica que el equipo A ha ganado un punto para 
+  poder detectar el siguiente cambio
+  */
   myData.puntEnvA = 0;
 
-
+  /* Solo añade un juego si el equipo A tiene mas de 3 puntos (o de 7 si estan en tie break) 
+  y una diferencia de 2 puntos frente al equipo B.
+  */
   if (tie == false ) {
     if ((puntA > 3) && (puntA - puntB >= 2)) {
       addjuegoA();
       puntA = 0;
       puntB = 0;
     }
-
   }  else if (tie == true) {
     if ((puntA >= 7 ) && (puntA - puntB >= 2) ) {
       addjuegoA();
@@ -139,54 +128,75 @@ void addPuntA() {
       puntB = 0;
     }
   }
+  
+  /* Si se encuentra en el primer set y el equipo A tiene mas de 6 juegos y hay una diferencia 
+  de 2 o más juegos entre los dos (o si tiene 7 juegos para el tie break), suma un set y tie 
+  pasa a valer falso. Si los dos llegan a 6 juegos, tie pasa a valer true.
+  */
   if (set == 1) {
     if ((set1A >= 6 && ((set1A - set1B) >= 2)) || set1A == 7) {
       set ++;
       tie  = false;
     }
-
     else if ((set1A == 6) && (set1B == 6)) {
       tie = true;
     }
   }
+  
+  /* Exactamente igual que en el set anterior, pero si detecta además que el equipo A ganó 
+  el set anterior, el equipo A gana.
+  */
   if (set == 2) {
     if ((set2A >= 6 && ((set2A - set2B) >= 2)) || set2A == 7) {
-      set ++;
-      tie  = false;
+      if (set1A > set1B) {
+        winA = true;
+      } else {
+        set ++;
+        tie  = false;
+      }
     }
-
     else if ((set2A == 6) && (set2B == 6)) {
       tie = true;
     }
   }
+  
+  /* Exactamente igual que el set anterior, pero comprobando el set 1 y el 2 para poder dar la 
+  victoria al equipo A.
+  */
   if (set == 3) {
     if ((set3A >= 6 && ((set3A - set3B) >= 2)) || set3A == 7) {
-      set ++;
-      tie  = false;
+      if (set1A > set1B || set2A > set2B) {
+        winA = true;
+      } else {
+        set ++;
+        tie  = false;
+      }
     }
-
     else if ((set3A == 6) && (set3B == 6)) {
       tie = true;
     }
   }
-
-
 }
 
-
+// Funcion que cuando es llamada, suma un punto al equipo B.
 void addPuntB() {
 
-
+  // Se suma un punto al equipo B
   puntB ++;
+  
+  /* Se reinicia el valor de la variable que indica que el equipo B ha ganado un punto para 
+  poder detectar el siguiente cambio
+  */
   myData.puntEnvB = 0;
 
+  /* Solo añade un juego si el equipo B tiene mas de 3 puntos (o de 7 si estan en tie break) y 
+  una diferencia de 2 puntos frente al equipo A.
+  */
   if (tie == false ) {
     if (( puntB > 3) && (puntB - puntA >= 2)) {
-
       addjuegoB();
       puntA = 0;
       puntB = 0;
-
     }
   }  else if (tie == true) {
     if ((puntB >= 7 ) && (puntB - puntA >= 2) ) {
@@ -195,6 +205,11 @@ void addPuntB() {
       puntB = 0;
     }
   }
+  
+  /* Si se encuentra en el primer set y el equipo B tiene mas de 6 juegos y hay una 
+  diferencia de 2 o más juegos entre los dos (o si tiene 7 juegos para el tie break), 
+  suma un set y tie pasa a valer falso. Si los dos llegan a 6 juegos, tie pasa a valer true.
+  */
   if (set == 1) {
     if ((set1B >= 6 && ((set1B - set1A) >= 2)) || set1B == 7) {
       set ++;
@@ -204,32 +219,49 @@ void addPuntB() {
       tie = true;
     }
   }
+  
+  /* Exactamente igual que en el set anterior, pero si detecta además que el equipo B ganó el 
+  set anterior, el equipo A pierde.
+  */
   if (set == 2) {
     if ((set2B >= 6 && ((set2B - set2A) >= 2)) || set2B == 7) {
-      set ++;
-      tie  = false;
+      if (set1B > set1A) {
+        winB = true;
+      } else {
+        set ++;
+        tie  = false;
+      }
     }
     else if ((set2A == 6) && (set2B == 6)) {
       tie = true;
+
     }
   }
+  
+  /* Exactamente igual que el set anterior, pero comprobando el set 1 y el 2 para poder dar 
+  la victoria al equipo B.
+  */
   if (set == 3) {
     if ((set3B >= 6 && ((set3B - set3A) >= 2)) || set3B == 7) {
-      set ++;
-      tie  = false;
+      if (set1B > set1A || set2B > set2A) {
+        winB = true;
+      } else {
+        set ++;
+        tie  = false;
+      }
     }
     else if ((set3A == 6) && (set3B == 6)) {
       tie = true;
     }
   }
-
-
 }
 
-
-
-
+// Funcion que pinta en la pantalla la puntuacion de la partida y el resultado final.
 void printResultado() {
+	
+  /* Se convierten las variables a la puntuacion de padel en funcion de si se encuentran 
+  en tie break o no.
+  */
   if (tie == false) {
     if (puntA == 0) {
       puntA_pantalla = "0";
@@ -268,60 +300,67 @@ void printResultado() {
     else if ((puntB > 3) && (puntA < puntB)) {
       puntB_pantalla = "AD";
     }
+	
   } else {
     puntA_pantalla = (String) puntA;
     puntB_pantalla = (String) puntB;
-
   }
 
-
-  display.setFont(&FreeMonoBold12pt7b);
-  display.setCursor(40, 20);
-  display.println("SCORE ELCO G4");
-  display.setFont(&FreeMonoBold18pt7b);
-  display.setCursor(0, 60);
-  display.println("A:");
-  display.setCursor(50, 60);
-  display.println(set1A);
-  display.setCursor(80, 60);
-  display.println(set2A);
-  display.setCursor(110, 60);
-  display.println(set3A);
-  display.setCursor(0, 100);
-  display.println("B:");
-  display.setCursor(50, 100);
-  display.println(set1B);
-  display.setCursor(80, 100);
-  display.println(set2B);
-  display.setCursor(110, 100);
-  display.println(set3B);
-  display.setCursor(170, 60);
-  display.println(puntA_pantalla);
-  display.setCursor(170, 100);
-  display.println(puntB_pantalla);
-
-
-
+  // Se pinta la puntuacion mientras no se haya acabado la partida.
+  if (winA == false && winB == false) {
+    display.setFont(&FreeMonoBold12pt7b);
+    display.setCursor(40, 20);
+    display.println("SCORE ELCO G4");
+    display.setFont(&FreeMonoBold18pt7b);
+    display.setCursor(0, 60);
+    display.println("A:");
+    display.setCursor(50, 60);
+    display.println(set1A);
+    display.setCursor(80, 60);
+    display.println(set2A);
+    display.setCursor(110, 60);
+    display.println(set3A);
+    display.setCursor(0, 100);
+    display.println("B:");
+    display.setCursor(50, 100);
+    display.println(set1B);
+    display.setCursor(80, 100);
+    display.println(set2B);
+    display.setCursor(110, 100);
+    display.println(set3B);
+    display.setCursor(170, 60);
+    display.println(puntA_pantalla);
+    display.setCursor(170, 100);
+    display.println(puntB_pantalla);
+	
+  } 
+  
+  //Se pinta la pantalla de victora o derrota en funcion del resultado final.
+  else if (winA == true) {
+    display.setFont(&FreeMonoBold12pt7b);
+    display.setCursor(40, 20);
+    display.println("SCORE ELCO G4");
+    display.setCursor(0, 60);
+    display.println( "Ha ganado el");
+    display.setCursor(0, 80);
+    display.println( "Equipo A");
+	
+  } 
+  else if (winB == true) {
+    display.setFont(&FreeMonoBold12pt7b);
+    display.setCursor(40, 20);
+    display.println("SCORE ELCO G4");
+    display.setCursor(0, 60);
+    display.println( "Ha ganado el ");
+    display.setCursor(0, 80);
+    display.println( "Equipo B");
+  }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Funcion que se ejecuta al comenzar el programa.
 void setup(void) {
+  
+  //Se habilita el puerto serie, el WiFi y la pantalla
   Serial.begin(115200);
   Serial.println();
   Serial.println("setup");
@@ -329,31 +368,32 @@ void setup(void) {
   display.init(); // enable diagnostic output on Serial
   Serial.println("setup done");
   WiFi.mode(WIFI_MODE_STA);
+  
   if (esp_now_init() != ESP_OK) {
-  Serial.println("Error initializing ESP-NOW");
-  return;
+    Serial.println("Error initializing ESP-NOW");
+    return;
   }
-
-  // Once ESPNow is successfully Init, we will register for recv CB to
-  // get recv packer info
+  
   esp_now_register_recv_cb(OnDataRecv);
 }
 
-
+// Función que se activa continuamente en bucle.
 void loop() {
-  if (myData.puntEnvB == 1){
+	
+  /* Si se detecta que el equipo A o B ha conseguido un punto, se suma 
+  un punto al equipo A o B respectivamente.
+  */
+  if (myData.puntEnvB == 1) {
     addPuntB();
-    }
-  if (myData.puntEnvA == 1){
+  }
+  if (myData.puntEnvA == 1) {
     addPuntA();
-    }
+  }
+  
+  // Se borra la pantalla y se vuelve a pintar con los resultados actualizados.
   display.setTextColor(GxEPD_BLACK);
   display.setRotation(1);
-  // draw background
-  //display.drawExampleBitmap(BitmapExample1, 0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, GxEPD_BLACK);
   display.fillScreen(GxEPD_WHITE);
   printResultado();
   display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false);
-
-
 }
