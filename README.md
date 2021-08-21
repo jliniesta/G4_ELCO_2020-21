@@ -1,6 +1,7 @@
 # PADEL WATCH
 
 https://padel-watch.webnode.es/
+https://blogs.upm.es/tfb/contador-de-pulsos-padel/
 
 Proyecto del grupo 4 de la asignatura de Electrónica de Consumo (ELCO)
 
